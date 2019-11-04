@@ -8,13 +8,13 @@ class UserController {
       return res.status(400).json({ error: 'User already exists.' });
     }
 
-    const { id, name, email, admin_user } = await User.create(req.body);
+    const { id, name, email, password_hash } = await User.create(req.body);
 
     return res.json({
       id,
       name,
       email,
-      admin_user,
+      password_hash,
     });
   }
 
@@ -34,13 +34,12 @@ class UserController {
       return res.status(401).json({ error: 'Password does not match.' });
     }
 
-    const { id, name, admin_user } = await user.update(req.body);
+    const { id, name } = await user.update(req.body);
 
     return res.json({
       id,
       name,
       email,
-      admin_user,
     });
   }
 }

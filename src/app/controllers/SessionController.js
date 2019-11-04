@@ -17,10 +17,6 @@ class SessionController {
       return res.status(401).json({ error: 'Password does not match' });
     }
 
-    // if (!user.admin_user) {
-    //   return res.status(401).json({ error: 'User does not Admin.' });
-    // }
-
     const { id, name } = user;
 
     return res.json({
