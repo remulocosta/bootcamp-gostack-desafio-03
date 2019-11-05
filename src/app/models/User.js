@@ -9,7 +9,6 @@ class User extends Model {
         email: Sequelize.STRING,
         password: Sequelize.VIRTUAL,
         password_hash: Sequelize.STRING,
-        admin_user: Sequelize.BOOLEAN,
       },
       {
         sequelize,
@@ -21,16 +20,10 @@ class User extends Model {
         user.password_hash = await bcrypt.hash(user.password, 7);
       }
     });
-
-    return this;
   }
 
   checkPassword(password) {
     return bcrypt.compare(password, this.password_hash);
-  }
-
-  ckeckIsAdmin() {
-    return this.admin_user;
   }
 }
 
