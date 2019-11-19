@@ -5,6 +5,7 @@ class PlanController {
   async index(req, res) {
     const { page = 1 } = req.query;
     const plans = await Plan.findAll({
+      where: { deleted_at: null },
       attributes: ['id', 'title', 'duration', 'price'],
       limit: 20,
       offset: (page - 1) * 20,
@@ -79,13 +80,22 @@ class PlanController {
   }
 
   async delete(req, res) {
-    const plan = await Plan.destroy({
+    // Method to delete record
+    /* const plan = await Plan.destroy({
       where: { id: req.params.id },
-    });
+    }); */
 
-    // backgrounds em segundo plano
+    const plan = await Plan.findByPk(req.params.id);
 
-    return res.json(plan);
+    if (!plan) {
+      return res.status(400).json({ error: 'Plan does not exist!' });
+    }
+
+    plan.deleted_at = new Date();
+
+    await plan.save();
+
+    return res.json({ ok: 'Plan deleted.' });
   }
 }
 
