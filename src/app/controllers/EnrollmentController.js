@@ -5,7 +5,8 @@ import Enrollment from '../models/Enrollment';
 import Plan from '../models/Plan';
 import Student from '../models/Student';
 
-import Mail from '../../lib/Mail';
+import EnrollmentMail from '../jobs/EnrollmentMail';
+import Queue from '../../lib/Queue';
 
 class EnrollmentController {
   async index(req, res) {
@@ -77,27 +78,25 @@ class EnrollmentController {
       { locale: ptBR }
     );
 
-    const defMount = duration > 1 ? 'meses' : 'mês';
-
-    await Mail.sendMail({
-      to: `${name} <${email}>`,
-      subject: 'Matricula realizada',
-      template: 'enrollment',
-      context: {
-        studentName: name,
-        planName: `${title} ( ${duration} ${defMount} ).`,
-        planPrice,
-        initialDate: formatedInitialDate,
-        finalDate: formatedFinalDate,
-      },
-    });
-
     const enrollmentCreate = await Enrollment.create({
       student_id,
       plan_id,
       start_date: initialDate,
       end_date: finalDate,
       price: planPrice,
+    });
+
+    /**
+     *  Notify email student enrollment
+     */
+    await Queue.add(EnrollmentMail.key, {
+      name,
+      email,
+      planPrice,
+      title,
+      duration,
+      formatedInitialDate,
+      formatedFinalDate,
     });
 
     return res.json(enrollmentCreate);
