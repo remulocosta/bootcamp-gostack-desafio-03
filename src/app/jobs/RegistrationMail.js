@@ -1,8 +1,8 @@
 import Mail from '../../lib/Mail';
 
-class EnrollmentMail {
+class RegistrationMail {
   get key() {
-    return 'EnrollmentMail';
+    return 'RegistrationMail';
   }
 
   async handle({ data }) {
@@ -21,7 +21,7 @@ class EnrollmentMail {
     await Mail.sendMail({
       to: `${name} <${email}>`,
       subject: 'Matricula realizada',
-      template: 'enrollment',
+      template: 'registration',
       context: {
         studentName: name,
         planName: `${title} ( ${duration} ${defMount} ).`,
@@ -33,4 +33,4 @@ class EnrollmentMail {
   }
 }
 
-export default new EnrollmentMail();
+export default new RegistrationMail();

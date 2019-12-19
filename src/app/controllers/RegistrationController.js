@@ -1,17 +1,17 @@
 import * as Yup from 'yup';
 import { addMonths, parseISO, isBefore, format } from 'date-fns';
 import ptBR from 'date-fns/locale/pt-BR';
-import Enrollment from '../models/Enrollment';
+import Registration from '../models/Registration';
 import Plan from '../models/Plan';
 import Student from '../models/Student';
 
-import EnrollmentMail from '../jobs/EnrollmentMail';
+import RegistrationMail from '../jobs/RegistrationMail';
 import Queue from '../../lib/Queue';
 
-class EnrollmentController {
+class RegistrationController {
   async index(req, res) {
     const { page = 1 } = req.query;
-    const enroll = await Enrollment.findAll({
+    const registration = await Registration.findAll({
       order: ['id'],
       attributes: ['id', 'start_date', 'end_date', 'price'],
       include: [
@@ -29,7 +29,7 @@ class EnrollmentController {
       limit: 20,
       offset: (page - 1) * 20,
     });
-    return res.json(enroll);
+    return res.json(registration);
   }
 
   async store(req, res) {
@@ -78,7 +78,7 @@ class EnrollmentController {
       { locale: ptBR }
     );
 
-    const enrollmentCreate = await Enrollment.create({
+    const registrationCreate = await Registration.create({
       student_id,
       plan_id,
       start_date: initialDate,
@@ -87,9 +87,9 @@ class EnrollmentController {
     });
 
     /**
-     *  Notify email student enrollment
+     *  Notify email student registration
      */
-    await Queue.add(EnrollmentMail.key, {
+    await Queue.add(RegistrationMail.key, {
       name,
       email,
       planPrice,
@@ -99,7 +99,7 @@ class EnrollmentController {
       formatedFinalDate,
     });
 
-    return res.json(enrollmentCreate);
+    return res.json(registrationCreate);
   }
 
   async update(req, res) {
@@ -115,14 +115,14 @@ class EnrollmentController {
 
     const { student_id, plan_id, start_date } = req.body;
     /**
-    const enrollExist = await Enrollment.findByPk(req.params.id);
-    if (!enrollExist) {
-      return res.status(400).json({ error: 'EnrollExist not exists.' });
+    const registrationExist = await Registration.findByPk(req.params.id);
+    if (!registrationExist) {
+      return res.status(400).json({ error: 'RegistrationExist not exists.' });
     }
     */
 
-    if (!(await Enrollment.findByPk(req.params.id))) {
-      return res.status(400).json({ error: 'EnrollExist not exists.' });
+    if (!(await Registration.findByPk(req.params.id))) {
+      return res.status(400).json({ error: 'Registration not exists.' });
     }
 
     if (!(await Plan.findByPk(req.body.plan_id))) {
@@ -133,7 +133,7 @@ class EnrollmentController {
       return res.status(400).json({ error: 'Student not exists.' });
     }
 
-    const enroll = await Enrollment.findByPk(req.params.id);
+    const registration = await Registration.findByPk(req.params.id);
     const { duration, price } = await Plan.findByPk(plan_id);
 
     const planPrice = duration * price;
@@ -146,7 +146,7 @@ class EnrollmentController {
 
     const finalDate = addMonths(initialDate, duration);
 
-    const sucessEnroll = await enroll.update({
+    const sucessRegistration = await registration.update({
       student_id,
       plan_id,
       start_date: initialDate,
@@ -155,22 +155,24 @@ class EnrollmentController {
     });
 
     // return res.json({ student_id, plan_id, start_date });
-    return res.json(sucessEnroll);
+    return res.json(sucessRegistration);
   }
 
   async delete(req, res) {
-    if (!(await Enrollment.findByPk(req.params.id))) {
-      return res.status(400).json({ error: 'Enroll not exists.' });
+    if (!(await Registration.findByPk(req.params.id))) {
+      return res.status(400).json({ error: 'Registration not exists.' });
     }
 
-    const enroll = await Enrollment.destroy({ where: { id: req.params.id } });
+    const registration = await Registration.destroy({
+      where: { id: req.params.id },
+    });
 
-    if (!enroll) {
-      return res.status(400).json({ error: 'Error deleting Enroll.' });
+    if (!registration) {
+      return res.status(400).json({ error: 'Error deleting Registration.' });
     }
 
-    return res.json({ ok: 'Enroll deleted.' });
+    return res.json({ ok: 'Registration deleted.' });
   }
 }
 
-export default new EnrollmentController();
+export default new RegistrationController();

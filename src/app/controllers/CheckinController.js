@@ -3,7 +3,7 @@ import { subDays } from 'date-fns';
 import { Op } from 'sequelize';
 import Checkin from '../models/Checkin';
 import Student from '../models/Student';
-import Enrollment from '../models/Enrollment';
+import Registration from '../models/Registration';
 
 class CheckinController {
   async index(req, res) {
@@ -42,7 +42,7 @@ class CheckinController {
     }
     const { id } = req.params;
 
-    const enroll = await Enrollment.findOne({
+    const registration = await Registration.findOne({
       where: {
         student_id: id,
         start_date: { [Op.lte]: new Date() },
@@ -50,8 +50,8 @@ class CheckinController {
       },
     });
 
-    if (!enroll) {
-      return res.status(400).json({ error: 'No valid enrollment found.' });
+    if (!registration) {
+      return res.status(400).json({ error: 'No valid registration found.' });
     }
 
     const checkDays = await Checkin.findAndCountAll({
@@ -61,7 +61,7 @@ class CheckinController {
       },
     });
 
-    if (checkDays.count > 5) {
+    if (checkDays.count >= 5) {
       return res
         .status(400)
         .json({ error: 'You can have only 5 checkins in the past 7 days' });
