@@ -1,10 +1,11 @@
-import * as Yup from 'yup';
 import { format } from 'date-fns';
 import ptBR from 'date-fns/locale/pt-BR';
+import * as Yup from 'yup';
+
+import Queue from '../../lib/Queue';
+import AnswerMail from '../jobs/AnswerMail';
 import HelpOrder from '../models/HelpOrder';
 import Student from '../models/Student';
-import AnswerMail from '../jobs/AnswerMail';
-import Queue from '../../lib/Queue';
 
 class HelpAnswerController {
   async index(req, res) {

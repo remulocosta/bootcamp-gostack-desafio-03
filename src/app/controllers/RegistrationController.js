@@ -1,12 +1,12 @@
-import * as Yup from 'yup';
 import { addMonths, parseISO, isBefore, format } from 'date-fns';
 import ptBR from 'date-fns/locale/pt-BR';
-import Registration from '../models/Registration';
-import Plan from '../models/Plan';
-import Student from '../models/Student';
+import * as Yup from 'yup';
 
-import RegistrationMail from '../jobs/RegistrationMail';
 import Queue from '../../lib/Queue';
+import RegistrationMail from '../jobs/RegistrationMail';
+import Plan from '../models/Plan';
+import Registration from '../models/Registration';
+import Student from '../models/Student';
 
 class RegistrationController {
   async index(req, res) {

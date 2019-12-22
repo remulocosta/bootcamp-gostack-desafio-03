@@ -1,9 +1,10 @@
-import * as Yup from 'yup';
 import { subDays } from 'date-fns';
 import { Op } from 'sequelize';
+import * as Yup from 'yup';
+
 import Checkin from '../models/Checkin';
-import Student from '../models/Student';
 import Registration from '../models/Registration';
+import Student from '../models/Student';
 
 class CheckinController {
   async index(req, res) {

@@ -5,10 +5,11 @@ module.exports = {
   },
   extends: [
       "airbnb-base",
-      "prettier"
+      "prettier",
   ],
   plugins: [
-      "prettier"
+      "prettier",
+      "eslint-plugin-import-helpers"
   ],
   globals: {
       Atomics: "readonly",
@@ -19,10 +20,25 @@ module.exports = {
       sourceType: "module"
   },
   rules: {
-      "prettier/prettier": "error",
-      "class-methods-use-this": "off",
-      "no-param-reassign": "off",
-      "camelcase": "off",
-      "no-unused-vars": ["error", {"argsIgnorePattern": "next"}]
+    "prettier/prettier": "error",
+    "class-methods-use-this": "off",
+    "no-param-reassign": "off",
+    "camelcase": "off",
+    "no-unused-vars": ["error", {"argsIgnorePattern": "next"}],
+     "import-helpers/order-imports": "off",
+    //[
+    //   "warn",
+    //   {
+    //     newlinesBetween: "always", // new line between groups
+    //     groups: [
+    //       "/^react/",
+    //       "module",
+    //       "/^@shared/",
+    //       "/^~/",
+    //       ["parent", "sibling", "index"],
+    //     ],
+    //     alphabetize: { order: "asc", ignoreCase: true },
+    //   },
+    // ],
   },
 };

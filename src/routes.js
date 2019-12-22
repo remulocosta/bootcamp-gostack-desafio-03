@@ -1,18 +1,20 @@
 import { Router } from 'express';
+import multer from 'multer';
+import multerConfig from './config/multer';
 
-import UserController from './app/controllers/UserController';
-import StudentController from './app/controllers/StudentController';
-import SessionController from './app/controllers/SessionController';
-import PlanController from './app/controllers/PlanController';
-
-import authMiddleware from './app/middlewares/auth';
-
-import RegistrationController from './app/controllers/RegistrationController';
 import CheckinController from './app/controllers/CheckinController';
-import HelpOrderController from './app/controllers/HelpOrderController';
 import HelpAnswerController from './app/controllers/HelpAnswerController';
+import HelpOrderController from './app/controllers/HelpOrderController';
+import PlanController from './app/controllers/PlanController';
+import RegistrationController from './app/controllers/RegistrationController';
+import SessionController from './app/controllers/SessionController';
+import StudentController from './app/controllers/StudentController';
+import UserController from './app/controllers/UserController';
+import authMiddleware from './app/middlewares/auth';
+import FileController from './app/controllers/FileController';
 
 const routes = new Router();
+const upload = multer(multerConfig);
 
 routes.post('/sessions', SessionController.store);
 
@@ -27,6 +29,7 @@ routes.post('/students/:id/help-order', HelpOrderController.store);
 routes.post('/users', UserController.store);
 routes.put('/users', UserController.update);
 
+routes.post('/files', upload.single('file'), FileController.store);
 // routes.use(adminMiddleware);
 
 routes.post('/students', StudentController.store);
