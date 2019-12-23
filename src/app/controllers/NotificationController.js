@@ -16,9 +16,10 @@ class NotificationController {
         .json({ error: 'Only Administrator can load notifications' });
     }
 
-    const notifications = await Notification.find({
-      read: false,
-    })
+    /**
+     *  Busca notificações
+     */
+    const notifications = await Notification.find({})
       .sort({ createdAt: 'desc' })
       .limit(20);
 
