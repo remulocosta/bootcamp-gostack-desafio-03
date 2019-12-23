@@ -6,7 +6,11 @@ const Notificationschema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    user: {
+    helporder: {
+      type: Number,
+      required: true,
+    },
+    student: {
       type: Number,
       required: true,
     },

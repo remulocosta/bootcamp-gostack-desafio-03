@@ -25,20 +25,20 @@ module.exports = {
     "no-param-reassign": "off",
     "camelcase": "off",
     "no-unused-vars": ["error", {"argsIgnorePattern": "next"}],
-     "import-helpers/order-imports": "off",
-    //[
-    //   "warn",
-    //   {
-    //     newlinesBetween: "always", // new line between groups
-    //     groups: [
-    //       "/^react/",
-    //       "module",
-    //       "/^@shared/",
-    //       "/^~/",
-    //       ["parent", "sibling", "index"],
-    //     ],
-    //     alphabetize: { order: "asc", ignoreCase: true },
-    //   },
-    // ],
+     "import-helpers/order-imports": //"off",
+    [
+      "warn",
+      {
+        newlinesBetween: "always", // new line between groups
+        groups: [
+          "/^react/",
+          "module",
+          "/^@shared/",
+          "/^~/",
+          ["parent", "sibling", "index"],
+        ],
+        alphabetize: { order: "asc", ignoreCase: true },
+      },
+    ],
   },
 };

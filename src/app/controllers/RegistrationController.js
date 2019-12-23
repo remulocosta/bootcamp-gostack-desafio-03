@@ -109,31 +109,47 @@ class RegistrationController {
       start_date: Yup.date().required(),
     });
 
+    /**
+     * valida campos do corpo da requisição
+     */
     if (!(await schema.isValid(req.body))) {
       return res.status(400).json({ error: 'Validation fails' });
     }
 
-    const { student_id, plan_id, start_date } = req.body;
     /**
-    const registrationExist = await Registration.findByPk(req.params.id);
-    if (!registrationExist) {
-      return res.status(400).json({ error: 'RegistrationExist not exists.' });
-    }
-    */
+     * desestrutura campos do corpo da requisição
+     */
+    const { student_id, plan_id, start_date } = req.body;
 
+    /**
+     * Verifica se existe a matricula
+     */
     if (!(await Registration.findByPk(req.params.id))) {
       return res.status(400).json({ error: 'Registration not exists.' });
     }
 
+    /**
+     * Verifica se existe o plano
+     */
     if (!(await Plan.findByPk(req.body.plan_id))) {
       return res.status(400).json({ error: 'Plan not exists.' });
     }
 
+    /**
+     * Verifica se existe o aluno
+     */
     if (!(await Student.findByPk(req.body.student_id))) {
       return res.status(400).json({ error: 'Student not exists.' });
     }
 
+    /**
+     * busca dados da matricula
+     */
     const registration = await Registration.findByPk(req.params.id);
+
+    /**
+     * busca dados do plano
+     */
     const { duration, price } = await Plan.findByPk(plan_id);
 
     const planPrice = duration * price;
@@ -154,7 +170,6 @@ class RegistrationController {
       price: planPrice,
     });
 
-    // return res.json({ student_id, plan_id, start_date });
     return res.json(sucessRegistration);
   }
 

@@ -1,7 +1,10 @@
+import { format } from 'date-fns';
+import pt from 'date-fns/locale/pt-BR';
 import * as Yup from 'yup';
 
 import HelpOrder from '../models/HelpOrder';
 import Student from '../models/Student';
+import Notification from '../schemas/Notification';
 
 class HelpOrderController {
   async index(req, res) {
@@ -36,6 +39,21 @@ class HelpOrderController {
     const helpOrderCreate = await HelpOrder.create({
       student_id: id,
       question,
+    });
+
+    const student = await Student.findByPk(id);
+    const formattedDate = format(new Date(), "dd 'de' MMMM', às' H:mm'h'", {
+      locale: pt,
+    });
+
+    /**
+     * Notificar academia
+     * Notify Gyn
+     */
+    await Notification.create({
+      content: `Novo Pedidos de auxílio, de ${student.name} em ${formattedDate}`,
+      helporder: helpOrderCreate.id,
+      student: student.id,
     });
 
     return res.json(helpOrderCreate);
