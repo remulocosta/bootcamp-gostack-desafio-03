@@ -5,12 +5,15 @@ import * as Yup from 'yup';
 import Queue from '../../lib/Queue';
 import AnswerMail from '../jobs/AnswerMail';
 import HelpOrder from '../models/HelpOrder';
+import paginate from '../../util/dbPagination';
 import Student from '../models/Student';
 
 class HelpAnswerController {
   async index(req, res) {
-    const { page = 1 } = req.query;
-    const helpOrder = await HelpOrder.findAll({
+    const { page = 1, limit = 5, q } = req.query;
+
+
+    const helpOrder = await HelpOrder.findAndCountAll( {
       order: ['id'],
       where: { answer: null },
       attributes: ['id', 'question', 'created_at', 'answer', 'answer_at'],
@@ -21,10 +24,12 @@ class HelpAnswerController {
           attributes: ['id', 'name'],
         },
       ],
-      limit: 20,
-      offset: (page - 1) * 20,
+      limit,
+      offset: (page - 1) * limit,
     });
-    return res.json(helpOrder);
+
+
+    return res.json(paginate(helpOrder, limit, page));
   }
 
   async store(req, res) {

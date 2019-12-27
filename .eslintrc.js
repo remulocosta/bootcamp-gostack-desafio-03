@@ -9,7 +9,7 @@ module.exports = {
   ],
   plugins: [
       "prettier",
-      "eslint-plugin-import-helpers"
+      "import-helpers"
   ],
   globals: {
       Atomics: "readonly",
@@ -25,8 +25,7 @@ module.exports = {
     "no-param-reassign": "off",
     "camelcase": "off",
     "no-unused-vars": ["error", {"argsIgnorePattern": "next"}],
-     "import-helpers/order-imports": //"off",
-    [
+    "import-helpers/order-imports": [
       "warn",
       {
         newlinesBetween: "always", // new line between groups

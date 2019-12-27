@@ -1,5 +1,6 @@
 import { subDays } from 'date-fns';
 import { Op } from 'sequelize';
+import paginate from '../../util/dbPagination';
 import * as Yup from 'yup';
 
 import Checkin from '../models/Checkin';
@@ -20,13 +21,18 @@ class CheckinController {
       return res.status(400).json({ error: 'Student not exists.' });
     }
 
+    const { page = 1, limit = 7} = req.query;
+    const offset = (page - 1) * limit;
     const { id } = req.params;
+
     const checkin = await Checkin.findAndCountAll({
       where: { student_id: id },
       order: ['id'],
+      limit,
+      offset,
     });
 
-    return res.json(checkin);
+    return res.json(paginate(checkin, limit, page));
   }
 
   async store(req, res) {

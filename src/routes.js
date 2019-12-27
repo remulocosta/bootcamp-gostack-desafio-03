@@ -5,7 +5,6 @@ import CheckinController from './app/controllers/CheckinController';
 import FileController from './app/controllers/FileController';
 import HelpAnswerController from './app/controllers/HelpAnswerController';
 import HelpOrderController from './app/controllers/HelpOrderController';
-import NotificationController from './app/controllers/NotificationController';
 import PlanController from './app/controllers/PlanController';
 import RegistrationController from './app/controllers/RegistrationController';
 import SessionController from './app/controllers/SessionController';
@@ -27,9 +26,11 @@ routes.use(authMiddleware);
 routes.get('/students/:id/help-order', HelpOrderController.index);
 routes.post('/students/:id/help-order', HelpOrderController.store);
 
+
 routes.post('/users', UserController.store);
 routes.put('/users', UserController.update);
 
+routes.get('/students', StudentController.index);
 routes.post('/students', StudentController.store);
 routes.put('/students', StudentController.update);
 
@@ -45,9 +46,6 @@ routes.delete('/registrations/:id', RegistrationController.delete);
 
 routes.get('/help-orders', HelpAnswerController.index);
 routes.post('/help-orders/:id/answer', HelpAnswerController.store);
-
-routes.get('/notifications', NotificationController.index);
-routes.put('/notifications/:id', NotificationController.update);
 
 routes.post('/files', upload.single('file'), FileController.store);
 

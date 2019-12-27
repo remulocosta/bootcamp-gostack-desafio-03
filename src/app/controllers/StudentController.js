@@ -1,8 +1,38 @@
 import * as Yup from 'yup';
+import { Op } from 'sequelize';
+import paginate from '../../util/dbPagination';
 
+import File from '../models/File';
 import Student from '../models/Student';
 
 class StudentsController {
+  async index(req, res) {
+    const { page = 1, limit = 7, q} = req.query;
+    const offset = (page - 1) * limit;
+
+    const options = {
+      include: [
+        {
+          model: File,
+          as: 'avatar',
+          attributes: ['id', 'path', 'url'],
+        },
+      ],
+      order: ['id'],
+      attributes: ['id', 'name', 'email', 'age', 'weight', 'height' ],
+      limit,
+      offset,
+    }
+
+    if (q) {
+      options.where = { name: { [Op.iLike]: `%${q}%` }};
+    };
+
+    const students = await Student.findAndCountAll(options);
+
+    return res.json(paginate(students, limit, page));
+  }
+
   async store(req, res) {
     // Cria esquema de campos para validação.
     const schema = Yup.object().shape({
@@ -30,7 +60,7 @@ class StudentsController {
       return res.status(400).json({ error: 'Student already exists.' });
     }
 
-    // Envia campos para o banco de dados e retorna valores perpsistidos.
+    // Envia campos para o banco de dados e retorna valores persistidos.
     const { id, name, email, age, weight, height } = await Student.create(
       req.body
     );
@@ -77,7 +107,17 @@ class StudentsController {
       }
     }
 
-    const { id, name, age, weight, height } = await student.update(req.body);
+    await student.update(req.body);
+
+    const { id, name, age, weight, height, avatar } = await Student.findByPk(student.id, {
+      include: [
+        {
+          model: File,
+          as: 'avatar',
+          attributes: ['id', 'path', 'url'],
+        },
+      ],
+    });
 
     return res.json({
       id,
@@ -86,6 +126,7 @@ class StudentsController {
       age,
       weight,
       height,
+      avatar,
     });
   }
 }

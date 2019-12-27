@@ -1,17 +1,27 @@
 import * as Yup from 'yup';
+import { Op } from 'sequelize';
 
+import paginate from '../../util/dbPagination';
 import Plan from '../models/Plan';
 
 class PlanController {
   async index(req, res) {
-    const { page = 1 } = req.query;
-    const plans = await Plan.findAll({
+    const { page = 1, limit = 5, q } = req.query;
+
+    const options = {
       where: { deleted_at: null },
       attributes: ['id', 'title', 'duration', 'price'],
-      limit: 20,
-      offset: (page - 1) * 20,
-    });
-    return res.json(plans);
+      limit,
+      offset: (page - 1) * limit,
+    };
+
+    if (q) {
+      options.where = { title: { [Op.iLike]: `%${q}%` }};
+    };
+
+    const plans = await Plan.findAndCountAll(options);
+
+    return res.json(paginate(plans, limit, page));
   }
 
   async store(req, res) {

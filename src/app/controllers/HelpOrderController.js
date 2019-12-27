@@ -3,21 +3,22 @@ import pt from 'date-fns/locale/pt-BR';
 import * as Yup from 'yup';
 
 import HelpOrder from '../models/HelpOrder';
+import paginate from '../../util/dbPagination';
 import Student from '../models/Student';
-import Notification from '../schemas/Notification';
 
 class HelpOrderController {
   async index(req, res) {
     const { id } = req.params;
-    const { page = 1 } = req.query;
+    const { page = 1, limit = 5} = req.query;
 
-    const helpOrder = await HelpOrder.findAll({
+    const helpOrder = await HelpOrder.findAndCountAll({
       where: { student_id: id },
       attributes: ['id', 'question', 'created_at', 'answer', 'answer_at'],
-      limit: 20,
-      offset: (page - 1) * 20,
+      limit,
+      offset: (page - 1) * limit,
     });
-    return res.json(helpOrder);
+
+    return res.json(paginate(helpOrder, limit, page));
   }
 
   async store(req, res) {
