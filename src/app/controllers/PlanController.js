@@ -1,5 +1,5 @@
-import * as Yup from 'yup';
 import { Op } from 'sequelize';
+import * as Yup from 'yup';
 
 import paginate from '../../util/dbPagination';
 import Plan from '../models/Plan';
@@ -9,14 +9,12 @@ class PlanController {
     const { page = 1, limit = 5, q } = req.query;
 
     const options = {
-      where: { deleted_at: null },
+      where: q
+        ? { deleted_at: null, title: { [Op.iLike]: `%${q}%` } }
+        : { deleted_at: null },
       attributes: ['id', 'title', 'duration', 'price'],
       limit,
       offset: (page - 1) * limit,
-    };
-
-    if (q) {
-      options.where = { title: { [Op.iLike]: `%${q}%` }};
     };
 
     const plans = await Plan.findAndCountAll(options);

@@ -1,15 +1,13 @@
-import { format } from 'date-fns';
-import pt from 'date-fns/locale/pt-BR';
 import * as Yup from 'yup';
 
-import HelpOrder from '../models/HelpOrder';
 import paginate from '../../util/dbPagination';
+import HelpOrder from '../models/HelpOrder';
 import Student from '../models/Student';
 
 class HelpOrderController {
   async index(req, res) {
     const { id } = req.params;
-    const { page = 1, limit = 5} = req.query;
+    const { page = 1, limit = 5 } = req.query;
 
     const helpOrder = await HelpOrder.findAndCountAll({
       where: { student_id: id },
@@ -40,21 +38,6 @@ class HelpOrderController {
     const helpOrderCreate = await HelpOrder.create({
       student_id: id,
       question,
-    });
-
-    const student = await Student.findByPk(id);
-    const formattedDate = format(new Date(), "dd 'de' MMMM', às' H:mm'h'", {
-      locale: pt,
-    });
-
-    /**
-     * Notificar academia
-     * Notify Gyn
-     */
-    await Notification.create({
-      content: `Novo Pedidos de auxílio, de ${student.name} em ${formattedDate}`,
-      helporder: helpOrderCreate.id,
-      student: student.id,
     });
 
     return res.json(helpOrderCreate);

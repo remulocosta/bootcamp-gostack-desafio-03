@@ -1,13 +1,13 @@
-import * as Yup from 'yup';
 import { Op } from 'sequelize';
-import paginate from '../../util/dbPagination';
+import * as Yup from 'yup';
 
+import paginate from '../../util/dbPagination';
 import File from '../models/File';
 import Student from '../models/Student';
 
 class StudentsController {
   async index(req, res) {
-    const { page = 1, limit = 7, q} = req.query;
+    const { page = 1, limit = 7, q } = req.query;
     const offset = (page - 1) * limit;
 
     const options = {
@@ -18,14 +18,11 @@ class StudentsController {
           attributes: ['id', 'path', 'url'],
         },
       ],
+      where: q ? { name: { [Op.iLike]: `%${q}%` } } : {},
       order: ['id'],
-      attributes: ['id', 'name', 'email', 'age', 'weight', 'height' ],
+      attributes: ['id', 'name', 'email', 'age', 'weight', 'height'],
       limit,
       offset,
-    }
-
-    if (q) {
-      options.where = { name: { [Op.iLike]: `%${q}%` }};
     };
 
     const students = await Student.findAndCountAll(options);
@@ -109,15 +106,18 @@ class StudentsController {
 
     await student.update(req.body);
 
-    const { id, name, age, weight, height, avatar } = await Student.findByPk(student.id, {
-      include: [
-        {
-          model: File,
-          as: 'avatar',
-          attributes: ['id', 'path', 'url'],
-        },
-      ],
-    });
+    const { id, name, age, weight, height, avatar } = await Student.findByPk(
+      student.id,
+      {
+        include: [
+          {
+            model: File,
+            as: 'avatar',
+            attributes: ['id', 'path', 'url'],
+          },
+        ],
+      }
+    );
 
     return res.json({
       id,

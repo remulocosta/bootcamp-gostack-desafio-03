@@ -3,17 +3,16 @@ import ptBR from 'date-fns/locale/pt-BR';
 import * as Yup from 'yup';
 
 import Queue from '../../lib/Queue';
+import paginate from '../../util/dbPagination';
 import AnswerMail from '../jobs/AnswerMail';
 import HelpOrder from '../models/HelpOrder';
-import paginate from '../../util/dbPagination';
 import Student from '../models/Student';
 
 class HelpAnswerController {
   async index(req, res) {
-    const { page = 1, limit = 5, q } = req.query;
+    const { page = 1, limit = 5 } = req.query;
 
-
-    const helpOrder = await HelpOrder.findAndCountAll( {
+    const helpOrder = await HelpOrder.findAndCountAll({
       order: ['id'],
       where: { answer: null },
       attributes: ['id', 'question', 'created_at', 'answer', 'answer_at'],
@@ -27,7 +26,6 @@ class HelpAnswerController {
       limit,
       offset: (page - 1) * limit,
     });
-
 
     return res.json(paginate(helpOrder, limit, page));
   }

@@ -1,8 +1,8 @@
 import { subDays } from 'date-fns';
 import { Op } from 'sequelize';
-import paginate from '../../util/dbPagination';
 import * as Yup from 'yup';
 
+import paginate from '../../util/dbPagination';
 import Checkin from '../models/Checkin';
 import Registration from '../models/Registration';
 import Student from '../models/Student';
@@ -21,7 +21,7 @@ class CheckinController {
       return res.status(400).json({ error: 'Student not exists.' });
     }
 
-    const { page = 1, limit = 7} = req.query;
+    const { page = 1, limit = 7 } = req.query;
     const offset = (page - 1) * limit;
     const { id } = req.params;
 

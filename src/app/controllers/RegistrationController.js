@@ -1,20 +1,18 @@
 import { addMonths, parseISO, isBefore, format } from 'date-fns';
 import ptBR from 'date-fns/locale/pt-BR';
+import { Op } from 'sequelize';
 import * as Yup from 'yup';
 
-
-import paginate from '../../util/dbPagination';
 import Queue from '../../lib/Queue';
-import { Op } from 'sequelize';
-
+import paginate from '../../util/dbPagination';
+import RegistrationMail from '../jobs/RegistrationMail';
 import Plan from '../models/Plan';
 import Registration from '../models/Registration';
-import RegistrationMail from '../jobs/RegistrationMail';
 import Student from '../models/Student';
 
 class RegistrationController {
   async index(req, res) {
-    const { page = 1, limit = 7, q} = req.query;
+    const { page = 1, limit = 7, q } = req.query;
     const offset = (page - 1) * limit;
 
     const options = {
@@ -24,7 +22,8 @@ class RegistrationController {
         {
           model: Student,
           as: 'student',
-          attributes: ['id', 'name']
+          where: q ? { name: { [Op.iLike]: `%${q}%` } } : {},
+          attributes: ['id', 'name'],
         },
         {
           model: Plan,
@@ -34,23 +33,7 @@ class RegistrationController {
       ],
       limit,
       offset,
-    }
-
-    if (q) {
-      options.include = [
-        {
-          model: Student,
-          as: 'student',
-          where: {name: { [Op.iLike]: `%${q}%`}},
-          attributes: ['id', 'name']
-        },
-        {
-          model: Plan,
-          as: 'plan',
-          attributes: ['id', 'title'],
-        },
-      ];
-    }
+    };
 
     const registration = await Registration.findAndCountAll(options);
 
