@@ -15,7 +15,7 @@ function paginate(model, limit, page) {
    */
   if (!(total < limit)) {
     /**
-     * verificar calculo, retorna 1 em caso de erro
+     * retorna 1 em caso de erro no cálculo
      */
     const calc = Math.ceil(total / limit);
     pages = Number.isNaN(calc) ? pages : calc;

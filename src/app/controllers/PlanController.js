@@ -13,6 +13,7 @@ class PlanController {
         ? { deleted_at: null, title: { [Op.iLike]: `%${q}%` } }
         : { deleted_at: null },
       attributes: ['id', 'title', 'duration', 'price'],
+      order: ['id'],
       limit,
       offset: (page - 1) * limit,
     };
@@ -20,6 +21,19 @@ class PlanController {
     const plans = await Plan.findAndCountAll(options);
 
     return res.json(paginate(plans, limit, page));
+  }
+
+  async show(req, res) {
+    const { id } = req.params;
+
+    const options = {
+      where: { id },
+      attributes: ['id', 'title', 'duration', 'price'],
+    };
+
+    const plans = await Plan.findOne(options);
+
+    return res.json(plans);
   }
 
   async store(req, res) {
@@ -53,7 +67,6 @@ class PlanController {
 
   async update(req, res) {
     const schema = Yup.object().shape({
-      id: Yup.number().required(),
       title: Yup.string().required(),
       duration: Yup.number().required(),
       price: Yup.number().required(),
@@ -63,13 +76,13 @@ class PlanController {
       return res.status(400).json({ error: 'Validation fails' });
     }
 
-    const plan = await Plan.findByPk(req.body.id);
+    const plan = await Plan.findByPk(req.params.id);
 
     if (!plan) {
       return res.status(400).json({ error: 'Plan does not exist!' });
     }
 
-    if (plan !== plan.title) {
+    if (plan.title !== req.body.title) {
       const plantitleExists = await Plan.findOne({
         where: { title: req.body.title },
       });

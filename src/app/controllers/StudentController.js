@@ -18,16 +18,46 @@ class StudentsController {
           attributes: ['id', 'path', 'url'],
         },
       ],
-      where: q ? { name: { [Op.iLike]: `%${q}%` } } : {},
       order: ['id'],
       attributes: ['id', 'name', 'email', 'age', 'weight', 'height'],
       limit,
       offset,
     };
 
+    if (q) {
+      options.where = { name: { [Op.iLike]: `%${q}%` } };
+    }
+
     const students = await Student.findAndCountAll(options);
 
     return res.json(paginate(students, limit, page));
+  }
+
+  async show(req, res) {
+    const { id } = req.params;
+
+    if (!id || !id.match(/^-{0,1}\d+$/))
+      return res.status(400).json({ err: 'Student id not provided' });
+
+    const options = {
+      include: [
+        {
+          model: File,
+          as: 'avatar',
+          attributes: ['id', 'path', 'url'],
+        },
+      ],
+      where: { id },
+      attributes: ['id', 'name', 'email', 'age', 'weight', 'height'],
+    };
+
+    const student = await Student.findOne(options);
+
+    if (!student) {
+      return res.status(404).json({ err: 'Student not found' });
+    }
+
+    return res.json(student);
   }
 
   async store(req, res) {
@@ -90,7 +120,7 @@ class StudentsController {
 
     const { email } = req.body;
 
-    const student = await Student.findByPk(req.body.id);
+    const student = await Student.findByPk(req.params.id);
 
     if (!student) {
       return res.status(400).json({ error: 'Student does not exist!' });
@@ -127,6 +157,19 @@ class StudentsController {
       weight,
       height,
       avatar,
+    });
+  }
+
+  async delete(req, res) {
+    const { id } = req.params;
+    if (!id || !id.match(/^-{0,1}\d+$/))
+      return res.status(400).json({ error: 'Student id not provided' });
+
+    const student = await Student.findByPk(id);
+    await student.destroy();
+
+    return res.json({
+      msg: `Student - ${student.name}<${student.email}> deleted successfully`,
     });
   }
 }

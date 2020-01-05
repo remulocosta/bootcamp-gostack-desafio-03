@@ -11,10 +11,12 @@ import Student from '../models/Student';
 class HelpAnswerController {
   async index(req, res) {
     const { page = 1, limit = 5 } = req.query;
+    const { id } = req.params;
 
     const helpOrder = await HelpOrder.findAndCountAll({
       order: ['id'],
-      where: { answer: null },
+      //  where: { answer: null, id },
+      where: id ? { answer: null, id } : { answer: null },
       attributes: ['id', 'question', 'created_at', 'answer', 'answer_at'],
       include: [
         {

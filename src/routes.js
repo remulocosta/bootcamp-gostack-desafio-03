@@ -30,12 +30,15 @@ routes.post('/users', UserController.store);
 routes.put('/users', UserController.update);
 
 routes.get('/students', StudentController.index);
+routes.get('/students/:id', StudentController.show);
 routes.post('/students', StudentController.store);
-routes.put('/students', StudentController.update);
+routes.put('/students/:id', StudentController.update);
+routes.delete('/students/:id', StudentController.delete);
 
 routes.get('/plans', PlanController.index);
+routes.get('/plans/:id', PlanController.show);
 routes.post('/plans', PlanController.store);
-routes.put('/plans', PlanController.update);
+routes.put('/plans/:id', PlanController.update);
 routes.delete('/plans/:id', PlanController.delete);
 
 routes.get('/registrations', RegistrationController.index);
@@ -44,6 +47,7 @@ routes.put('/registrations/:id', RegistrationController.update);
 routes.delete('/registrations/:id', RegistrationController.delete);
 
 routes.get('/help-orders', HelpAnswerController.index);
+routes.get('/help-orders/students/:id', HelpAnswerController.index);
 routes.post('/help-orders/:id/answer', HelpAnswerController.store);
 
 routes.post('/files', upload.single('file'), FileController.store);
